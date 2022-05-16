@@ -1,7 +1,6 @@
 import React from "react";
 import { useDropzone, FileWithPath, FileRejection } from "react-dropzone";
 import toast from "react-hot-toast";
-import { HiX } from "react-icons/hi";
 
 import UploadColorIcon from "public/svg/upload-color.svg";
 
@@ -9,9 +8,7 @@ import { AcceptedFileItems } from "./AcceptedFileItems";
 
 const FileUpload = () => {
   const [myFiles, setMyFiles] = React.useState<FileWithPath[]>([]);
-  const [myRejectedFiles, setMyRejectedFiles] = React.useState<FileRejection[]>(
-    []
-  );
+
   const onDrop = React.useCallback(
     (acceptedFiles: FileWithPath[], rejectedFiles: FileRejection[]) => {
       setMyFiles([...myFiles, ...acceptedFiles]);
@@ -23,26 +20,25 @@ const FileUpload = () => {
   );
   const [uploadStatus, setUploadStatus] = React.useState(false);
   const [uploadProgress, setUploadProgress] = React.useState(0);
-  const { acceptedFiles, fileRejections, getRootProps, getInputProps } =
-    useDropzone({
-      accept: {
-        "application/pdf": [],
-      },
-      onDrop,
-      validator: (file) => {
-        // do not allow files greater than 10mb
-        if (file.size > 10485760) {
-          return [
-            {
-              code: "file-too-large",
-              message:
-                "File is too large. Please remove it. This file won't be uploaded",
-            },
-          ];
-        }
-        return null;
-      },
-    });
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: {
+      "application/pdf": [],
+    },
+    onDrop,
+    validator: (file) => {
+      // do not allow files greater than 10mb
+      if (file.size > 10485760) {
+        return [
+          {
+            code: "file-too-large",
+            message:
+              "File is too large. Please remove it. This file won't be uploaded",
+          },
+        ];
+      }
+      return null;
+    },
+  });
 
   const removeAcceptedFile = (index: number) => {
     const newFiles = [...myFiles];
