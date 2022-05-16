@@ -6,11 +6,6 @@ import { HiX } from "react-icons/hi";
 import UploadColorIcon from "public/svg/upload-color.svg";
 
 import { AcceptedFileItems } from "./AcceptedFileItems";
-import { FileRejectionItems } from "./FileRejectionItems";
-
-interface CustomRejectedProps extends Omit<FileRejection, "file"> {
-  file: FileWithPath;
-}
 
 const FileUpload = () => {
   const [myFiles, setMyFiles] = React.useState<FileWithPath[]>([]);
@@ -20,9 +15,11 @@ const FileUpload = () => {
   const onDrop = React.useCallback(
     (acceptedFiles: FileWithPath[], rejectedFiles: FileRejection[]) => {
       setMyFiles([...myFiles, ...acceptedFiles]);
-      setMyRejectedFiles([...myRejectedFiles, ...rejectedFiles]);
+      if (rejectedFiles.length > 0) {
+        toast.error("Some of the files are invalid. They won't be uploaded");
+      }
     },
-    [myFiles, myRejectedFiles]
+    [myFiles]
   );
   const [uploadStatus, setUploadStatus] = React.useState(false);
   const [uploadProgress, setUploadProgress] = React.useState(0);
@@ -51,11 +48,6 @@ const FileUpload = () => {
     const newFiles = [...myFiles];
     newFiles.splice(index, 1);
     setMyFiles(newFiles);
-  };
-  const removeRejectedFile = (index: number) => {
-    const newFiles = [...myRejectedFiles];
-    newFiles.splice(index, 1);
-    setMyRejectedFiles(newFiles);
   };
 
   const handleUpload = () => {
@@ -114,15 +106,6 @@ const FileUpload = () => {
             uploadProgress={uploadProgress}
           />
         ))}
-        {myRejectedFiles.map((rejection: CustomRejectedProps, index) => (
-          <FileRejectionItems
-            key={rejection.file.path}
-            file={rejection.file}
-            errors={rejection.errors}
-            removeFile={removeRejectedFile}
-            index={index}
-          />
-        ))}
       </ul>
 
       <footer className="grid px-4 mt-4 place-content-end">
@@ -130,7 +113,7 @@ const FileUpload = () => {
           onClick={handleUpload}
           className="py-3 px-4 font-semibold rounded-full uppercase text-xs leading-4 gap-2 flex items-center justify-center transition-all tracking-[1px] text-white bg-teal-500 focus:outline-none focus:ring focus:ring-teal-400 focus:ring-offset-2 disabled:text-white disabled:pointer-events-none"
         >
-          Submit
+          Save
         </button>
       </footer>
     </div>
